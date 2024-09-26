@@ -54,14 +54,5 @@ echo "The three most recent commit messages in branch '$BRANCH' are:"
 echo "$COMMIT_MESSAGES"
 echo ""
 
-# Send the commit messages to Ollama
-# Replace 'ollama run <model>' with the actual Ollama command you intend to use
-# For example, if you want to generate a summary or perform some analysis
-
 # Example: Generate a summary of the commits
-ollama run "$OLLAMA_MODEL" --prompt "Here are the three most recent Git commit messages:\n\n$COMMIT_MESSAGES\n\nPlease provide a summary of these commits."
-
-# Optional: Capture Ollama's response
-# RESPONSE=$(ollama run "$OLLAMA_MODEL" --prompt "Here are the three most recent Git commit messages:\n\n$COMMIT_MESSAGES\n\nPlease provide a summary of these commits.")
-# echo "Ollama's Summary:"
-# echo "$RESPONSE"
+ollama run "$OLLAMA_MODEL" "You are a software engineer." "Here are the most recent Git commits in a repo:\n\n$COMMIT_MESSAGES\n\nPlease provide a brief summary of what was done."
