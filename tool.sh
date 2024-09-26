@@ -55,4 +55,4 @@ echo "$COMMIT_MESSAGES"
 echo ""
 
 # Example: Generate a summary of the commits
-ollama run "$OLLAMA_MODEL" "You are a software engineer." "Here are the most recent Git commits in a repo:\n\n$COMMIT_MESSAGES\n\nPlease provide a brief summary of what was done."
+ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "Here are the most recent Git commits in a repo:\n\n$COMMIT_MESSAGES\n\nProivde a concise summary of these commits in a few sentences, to help refresh the developer's memory."
