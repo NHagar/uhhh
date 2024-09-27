@@ -3,13 +3,13 @@
 # Function to display usage
 usage() {
     echo "Usage: $0 [-m MODEL] [-b BRANCH]"
-    echo "  -m MODEL   Specify the Ollama model to use (default: default-model)"
+    echo "  -m MODEL   Specify the Ollama model to use (default: gemma2)"
     echo "  -b BRANCH  Specify the Git branch to fetch commits from (default: current branch)"
     exit 1
 }
 
 # Default values
-OLLAMA_MODEL="llama3.1"  # Replace with your desired default Ollama model
+OLLAMA_MODEL="gemma2"  # Replace with your desired default Ollama model
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 # Parse command-line options
