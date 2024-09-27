@@ -5,12 +5,14 @@ usage() {
     echo "Usage: $0 [-m MODEL] [-b BRANCH]"
     echo "  -m MODEL   Specify the Ollama model to use (default: gemma2)"
     echo "  -b BRANCH  Specify the Git branch to fetch commits from (default: current branch)"
+    echo "  -n NUM_COMMITS  Specify the number of recent commits to fetch (default: 3)"
     exit 1
 }
 
 # Default values
 OLLAMA_MODEL="gemma2"  # Replace with your desired default Ollama model
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
+NUM_COMMITS=3
 
 # Parse command-line options
 while getopts ":m:b:h" opt; do
@@ -20,6 +22,15 @@ while getopts ":m:b:h" opt; do
             ;;
         b )
             BRANCH=$OPTARG
+            ;;
+        n )
+            # Validate that NUM_COMMITS is a positive integer
+            if [[ "$OPTARG" =~ ^[1-9][0-9]*$ ]]; then
+                NUM_COMMITS=$OPTARG
+            else
+                echo "Error: NUM_COMMITS must be a positive integer."
+                usage
+            fi
             ;;
         h )
             usage
@@ -42,17 +53,17 @@ if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     exit 1
 fi
 
-# Fetch the three most recent commit messages
-COMMIT_MESSAGES=$(git log -n 3 -p --pretty=format:"### Commit: %h - %s (%an, %ar)" "$BRANCH")
+# Fetch the specified number of recent commits with diffs, limiting context lines
+COMMIT_DATA=$(git log -n "$NUM_COMMITS" -p -U2 --pretty=format:"### Commit: %h - %s (%an, %ar)" "$BRANCH")
 
-if [ -z "$COMMIT_MESSAGES" ]; then
+if [ -z "$COMMIT_DATA" ]; then
     echo "No commits found in branch '$BRANCH'."
     exit 0
 fi
 
-echo "The three most recent commit messages in branch '$BRANCH' are:"
-echo "$COMMIT_MESSAGES"
+echo "The $NUM_COMMITS most recent commits in branch '$BRANCH' with diffs are:"
+echo "$COMMIT_DATA"
 echo ""
 
 # Example: Generate a summary of the commits
-ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last? Give me a brief, high-level summary of the work, along with 1-2 bullet points about the commits.\n\n$COMMIT_MESSAGES"
+ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last? Give me a brief, high-level summary of the work, along with 1-2 bullet points about the commits.\n\n$COMMIT_DATA"
