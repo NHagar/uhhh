@@ -43,7 +43,7 @@ if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
 fi
 
 # Fetch the three most recent commit messages
-COMMIT_MESSAGES=$(git log -n 3 --pretty=format:"%h - %s (%an, %ar)" "$BRANCH")
+COMMIT_MESSAGES=$(git log -n 3 -p --pretty=format:"### Commit: %h - %s (%an, %ar)" "$BRANCH")
 
 if [ -z "$COMMIT_MESSAGES" ]; then
     echo "No commits found in branch '$BRANCH'."
@@ -55,4 +55,4 @@ echo "$COMMIT_MESSAGES"
 echo ""
 
 # Example: Generate a summary of the commits
-ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "Here are the most recent Git commits in a repo:\n\n$COMMIT_MESSAGES\n\nProivde a concise summary of these commits in a few sentences, to help refresh the developer's memory."
+ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last?\n\n$COMMIT_MESSAGES"
