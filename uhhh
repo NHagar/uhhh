@@ -10,7 +10,7 @@ usage() {
 }
 
 # Default values
-OLLAMA_MODEL="gemma2"  # Replace with your desired default Ollama model
+OLLAMA_MODEL="gemma2"
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 NUM_COMMITS=3
 
@@ -110,5 +110,4 @@ echo "$TRUNCATED_COMMIT_DATA"
 echo ""
 
 
-# Example: Generate a summary of the commits
 ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last? Give me a brief, high-level summary of the work, along with 1-2 bullet points about the commits. Don't offer to follow up.\n\n$TRUNCATED_COMMIT_DATA"
