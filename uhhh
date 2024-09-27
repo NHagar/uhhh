@@ -61,9 +61,54 @@ if [ -z "$COMMIT_DATA" ]; then
     exit 0
 fi
 
+# Function to truncate diffs
+truncate_diffs() {
+    local input="$1"
+    local max_chars="$2"
+    local output=""
+    local current_commit=""
+    local diff=""
+    local in_diff=0
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^###\ Commit: ]]; then
+            # If there's a previous commit, process it
+            if [ -n "$current_commit" ]; then
+                # Truncate the diff if necessary
+                if [ ${#diff} -gt "$max_chars" ]; then
+                    diff="${diff:0:$max_chars}..."
+                fi
+                # Append to output
+                output+="$current_commit"$'\n'"$diff"$'\n\n'
+            fi
+            # Start a new commit
+            current_commit="$line"
+            diff=""
+            in_diff=1
+        elif [ "$in_diff" -eq 1 ]; then
+            diff+="$line"$'\n'
+        fi
+    done <<< "$input"
+
+    # Process the last commit
+    if [ -n "$current_commit" ]; then
+        if [ ${#diff} -gt "$max_chars" ]; then
+            diff="${diff:0:$max_chars}..."
+        fi
+        output+="$current_commit"$'\n'"$diff"$'\n'
+    fi
+
+    echo "$output"
+}
+
+# Truncate diffs based on MAX_CHARS
+TRUNCATED_COMMIT_DATA=$(truncate_diffs "$COMMIT_DATA" 500)
+
+
 echo "The $NUM_COMMITS most recent commits in branch '$BRANCH' with diffs are:"
-echo "$COMMIT_DATA"
+echo "$TRUNCATED_COMMIT_DATA"
 echo ""
 
+
 # Example: Generate a summary of the commits
-ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last? Give me a brief, high-level summary of the work, along with 1-2 bullet points about the commits. Don't offer to follow up.\n\n$COMMIT_DATA"
+ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last? Give me a brief, high-level summary of the work, along with 1-2 bullet points about the commits. Don't offer to follow up.\n\n$TRUNCATED_COMMIT_DATA"
