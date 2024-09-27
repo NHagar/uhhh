@@ -55,4 +55,4 @@ echo "$COMMIT_MESSAGES"
 echo ""
 
 # Example: Generate a summary of the commits
-ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last? Give me a brief, high-level summary.\n\n$COMMIT_MESSAGES"
+ollama run "$OLLAMA_MODEL" "You are a software engineer's assistant." "I was working in this repo, but I forgot what I was doing. Can you remind me what I was working on last? Give me a brief, high-level summary of the work, along with 1-2 bullet points about the commits.\n\n$COMMIT_MESSAGES"
